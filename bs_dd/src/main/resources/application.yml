@@ -1,0 +1,33 @@
+server:
+  port: 8989  #修改服务器默认端口号
+  jsp-servlet:
+    init-parameters:
+      development: true  #支持热部署
+  context-path: /bs_dd     #当当网的项目名
+spring:
+  mvc:              #配置springboot支持jsp之后 的视图解析器的前缀和后缀
+    view:
+      prefix: /    #用来指定前缀  / 代表项目中webapp的目录
+      suffix: .jsp
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/dd
+    username: root
+    password: root
+  mail:
+    host: smtp.qq.com    #邮箱服务器地址
+    username: 1819267426@qq.com   #邮箱账号
+    password: fukqkjwokwjwiffh            #邮箱授权码
+    default-encoding: utf-8    #默认编码:
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            required: true
+            enable: true
+mybatis:
+  mapper-locations: classpath:com/baizhi/mapper/*.xml
+  type-aliases-package: com.baizhi.entity
+

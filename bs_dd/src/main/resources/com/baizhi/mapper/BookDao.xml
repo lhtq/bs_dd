@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.baizhi.dao.BookDao">
+    <!-- 查询所有图书 -->
+    <select id="selectAllBook" resultType="Book">
+		select * from dd_book
+	</select>
+    <select id="selectByPage" resultType="Book">
+        select * from dd_book limit #{start},#{rows}
+    </select>
+
+    <!-- 根据id查找一本图书  -->
+    <select id="selectById" resultType="Book">
+		select * from dd_book where id=#{id}
+	</select>
+
+    <!-- 添加一本图书 -->
+    <insert id="addBook" parameterType="Book">
+		insert into dd_book values(#{id},#{name},#{price},#{dd_price},#{stock},#{sales,jdbcType=INTEGER},#{author},
+									#{press},#{pub_date},#{edition},#{printing_time},#{imperssion},
+									#{book_size},#{paper_size},#{packing},#{word_number},#{page},
+									#{isbn},#{editor_writer},#{book_abstract},#{author_introduct},
+									#{catelog},#{media_revie},#{create_date},#{cover_name},#{category_id})
+	</insert>
+
+    <!-- 删除一本图书  -->
+    <delete id="deleteBook" parameterType="String">
+		delete from dd_book where id=#{id}
+	</delete>
+
+    <!-- 更新一本图书  -->
+    <update id="updateBook" parameterType="Book">
+        <!-- 注意：在sql语句中要确保实体和库中的字段相同，顺序一致，若字段不同需要起别名  -->
+        update dd_book
+        set name=#{name},price=#{price},dd_price=#{dd_price},stock=#{stock},sales=#{sales,jdbcType=INTEGER},author=#{author},
+        press=#{press},pub_date=#{pub_date},edition=#{edition},printing_time=#{printing_time},imperssion=#{imperssion},
+        book_size=#{book_size},paper_size=#{paper_size},packing=#{packing},word_number=#{word_number},page=#{page},
+        isbn=#{isbn},editor_writer=#{editor_writer},book_abstract=#{book_abstract},author_introduct=#{author_introduct},
+        catelog=#{catelog},media_revie=#{media_revie},
+        <if test="cover_name != null">cover_name=#{cover_name},</if>
+        category_id=#{category_id}
+        where id=#{id}
+    </update>
+
+    <!-- 模糊查询  -->
+    <select id="selectByKey" resultType="Book">
+        select *
+        from dd_book
+        <where>             <!-- 动态sql语句格式  -->
+            <if test="key == 'name'">
+                name like "%"#{content}"%"  <!-- 字符串的拼接  -->
+            </if>
+
+            <if test="key == 'author'">
+                author like "%"#{content}"%"
+            </if>
+
+            <if test="key == 'press'">
+                press like "%"#{content}"%"
+            </if>
+        </where>
+    </select>
+
+    <!-- 查询销量前八的图书  -->
+    <select id="selectBookBySales" resultType="Book">
+		select * from dd_book order by sales desc limit 0,8
+	</select>
+
+    <!-- 查询新上架的八本图书  -->
+    <select id="selectBookByCreate_date" resultType="Book">
+		select * from dd_book order by create_date desc limit 0,8
+	</select>
+
+    <!-- 新书热卖  -->
+    <select id="selectBookByCreate_dateAndSales" resultType="Book">
+		select * from dd_book order by create_date desc,sales desc limit 0,8
+	</select>
+
+    <!-- 查询某分类的图书  -->
+    <select id="selectBookByCategory_id" resultType="Book">
+        select
+        b.*
+        from dd_book b left join dd_category c
+        on b.category_id = c.id
+        <where>
+            <choose>
+                <when test=" sid == null || sid == ''">
+                    c.top_id = #{fid}
+                </when>
+                <otherwise>
+                    c.id = #{sid}
+                </otherwise>
+            </choose>
+        </where>
+        order by b.create_date desc
+    </select>
+
+    <!-- 查询某分类的图书的第n页  -->
+    <select id="selectBookByCategory_idAndPage" resultType="Book">
+        select bbb.* from
+        (select c.id cid,c.category_name ccategory_name,c.rank crank,c.top_id ctop_id,b.*
+        from dd_book b left join dd_category c on b.category_id = c.id
+        <where>
+            <choose>
+                <when test="sid==null or sid==''">
+                    c.top_id=#{fid}
+                </when>
+                <otherwise>
+                    c.id=#{sid}
+                </otherwise>
+            </choose>
+        </where>
+        order by b.create_date desc) bbb
+        limit #{start},#{rows}
+    </select>
+
+
+
+
+    <!-- 前台购买图书后修改图书的销量和库存  -->
+    <update id="updateCount">
+		update dd_book set sales=sales + #{count},stock=stock - #{count}
+		where id=#{id}
+	</update>
+</mapper>

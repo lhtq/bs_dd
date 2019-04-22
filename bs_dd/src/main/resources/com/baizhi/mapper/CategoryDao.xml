@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.baizhi.dao.CategoryDao">
+	
+	<resultMap id="aa" type="Category">
+		<id column="fid" property="id"/>
+		<result column="fcategory_name" property="category_name"/>
+		<result column="frank" property="rank"/>
+		<result column="ftop_id" property="top_id"/>
+		<collection property="seconds" ofType="Category">
+			<id column="sid" property="id"/>			
+			<result column="scategory_name" property="category_name"/>
+			<result column="srank" property="rank"/>
+			<result column="stop_id" property="top_id"/>
+		</collection>
+		
+	</resultMap>
+	
+	
+	<insert id="addCategory" parameterType="category">
+		insert into dd_category values(#{id},#{category_name},#{rank},#{top_id,jdbcType=VARCHAR})
+	</insert>
+	
+	<delete id="deleteCategory" parameterType="String">
+		delete from dd_category where id=#{id}
+	</delete>
+	
+	<select id="selectAll" resultType="category">
+		select * from dd_category
+	</select>
+
+	<select id="selectAllFirst" resultType="category">
+		select * from dd_category where rank=1
+	</select>
+	
+	<select id="selectAllSecond" resultType="category">
+		select * from dd_category where rank=2
+	</select>
+	
+	<!-- 查询所有的一级标题，包含其下的所有二级标题  -->
+	<select id="selectAllFirstIncludeSecond" resultMap="aa">
+		select
+			f.id as fid,
+			f.category_name as fcategory_name,
+			f.rank as frank,
+			f.top_id as ftop_id,
+				s.id as sid,
+				s.category_name as scategory_name,
+				s.rank as srank,
+				s.top_id as stop_id
+		from
+			dd_category f left join dd_category s
+		on s.top_id = f.id
+		where f.rank=1
+	</select>
+
+	<!-- 根据id查询一级标题，包含其下的所有二级标题  -->
+	<select id="selectOneFirstIncludeSecond" parameterType="String" resultMap="aa">
+		select
+			f.id as fid,
+			f.category_name as fcategory_name,
+			f.rank as frank,
+			f.top_id as ftop_id,
+				s.id as sid,
+				s.category_name as scategory_name,
+				s.rank as srank,
+				s.top_id as stop_id
+		from
+			dd_category f left join dd_category s
+		on s.top_id = f.id
+		where f.id=#{id}
+	</select>
+	
+	
+</mapper>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.baizhi.dao.AddressDao">
+	
+	<!-- 添加一个用户  -->
+	<insert id="add" parameterType="Address">
+		insert into dd_address values(#{id},#{name},#{local},#{zip_code},#{phone},#{user_id})
+	</insert>
+	<!-- 根据用户id查询用户的所有地址  -->
+	<select id="selectByUser_id" parameterType="String" resultType="Address">
+		select * from dd_address where user_id=#{user_id}
+	</select>
+	<!-- 根据id查询地址  -->
+	<select id="selectById" parameterType="String" resultType="Address">
+		select * from dd_address where id=#{id}
+	</select>
+	<!-- 修改地址  -->
+	<update id="update" parameterType="Address">
+		update dd_address set name=#{name},local=#{local},zip_code=#{zip_code},phone=#{phone}
+		where id=#{id}
+	</update>
+</mapper>
+
+
+
+
+
+
+
